@@ -1,0 +1,88 @@
+package main
+
+// Compare each number with every other number.
+// The algorithm iterates i and compares it with every element that comes before i.
+// This way, we don't do the same comparisons twice.
+// The comparison of i with elements that come after i will happen in subsequent iterations.
+
+// Returns an auxilary table which the sorted order of the input array.
+func countingSort(input []int32) []int32 {
+	count := make([]int32, len(input))
+
+	for i := 1; i < len(input); i++ {
+		for j := 0; j < i; j++ {
+			if input[i] < input[j] {
+				count[j] += 1
+			} else {
+				count[i] += 1
+			}
+		}
+	}
+
+	return count
+}
+
+// In my opinion this is just a counting sort where you have a few restrictions that help
+// make it more efficient.
+// Essentially, we consider that all the keys lie between a certain range (smaller the range, faster the sort)
+// This works really well if there is a lot of equality as well.
+// We build a frequncy table and organize the keys into "families" and then generate a result table
+// with only the last member of each family populated in it.
+// Though it seems really restrictive, you may apply this logic to just the leading values of the keys
+// and obtain a partially sorted table which is pretty neat.
+// Also, unlike the auxilary table you got from the countingSort, here we get the actual result.
+func distrubutionSort(u int, v int, input []int32) []int32 {
+	count := make([]int32, v-u+1)
+	result := make([]int32, len(input))
+
+	// 0 would be u, 1 would be u+1 and so on.
+	// it is essentially, u, u+i...v
+	for _, value := range input {
+		count[value-int32(u)] += 1
+	}
+
+	// now count is a frequency table.
+	for i := 1; i < len(count); i++ {
+		count[i] += count[i-1]
+	}
+
+	// now count[i] is the number of keys that are less than, or equal to u+i
+	// in the case where there are no equalities, it would be a perfect sort
+	// we will loop through the frequency table in reverse order and generate a result
+	// table where we populate only the positions of the last members of a given family.
+	// for example, if the result is supposed to be 1, 1, 1, 2, 2, 2, 2, 2
+	// the result table we generate would look like 0, 0, 1, 0, 0, 0, 0, 2
+	for j := len(count); j > 0; j-- {
+		i := count[j-1]
+		result[i-1] = int32(j)
+		count[j-1] -= 1
+	}
+
+	return result
+}
+
+// This sort assumes that everything to the left of the element under consideration, Kj is already sorted.
+// We look for where we can place Kj, for this we go from the left of Kj and try to find a Ki such that
+// Ki<Kj.
+// The first instance where this is true, is where Kj is to be placed.
+// Until we find that Ki<=Kj, we keep shifting Ki with Ki+1(Kj)
+// Note, due to the nature of the algorithm, input[i+1] will always be the element under consideration Kj.
+func straightInserstionSort(input []int32) []int32 {
+	for j := 1; j < len(input); j++ {
+		i := j - 1
+
+		for i >= 0 {
+			if input[i+1] >= input[i] {
+				break
+			} else {
+				// keep swapping input[i] with input[i+1] (Kj)
+				temp := input[i+1]
+				input[i+1] = input[i]
+				input[i] = temp
+				i--
+			}
+		}
+	}
+
+	return input
+}
