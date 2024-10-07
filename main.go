@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 // Compare each number with every other number.
 // The algorithm iterates i and compares it with every element that comes before i.
 // This way, we don't do the same comparisons twice.
@@ -67,7 +69,7 @@ func distrubutionSort(u int, v int, input []int32) []int32 {
 // The first instance where this is true, is where Kj is to be placed.
 // Until we find that Ki<=Kj, we keep shifting Ki with Ki+1(Kj)
 // Note, due to the nature of the algorithm, input[i+1] will always be the element under consideration Kj.
-func straightInserstionSort(input []int32) []int32 {
+func straightInsertionSort(input []int32) []int32 {
 	for j := 1; j < len(input); j++ {
 		i := j - 1
 
@@ -84,5 +86,41 @@ func straightInserstionSort(input []int32) []int32 {
 		}
 	}
 
+	return input
+}
+
+func moddedStraightInsertionSort(jump int, input []int32) []int32 {
+	for j := 1; j < len(input); j++ {
+		i := j - jump
+
+		for i >= 0 {
+			if input[i+jump] >= input[i] {
+				break
+			} else {
+				// keep swapping input[i] with input[i+jump] (Kj)
+				temp := input[i+jump]
+				input[i+jump] = input[i]
+				input[i] = temp
+				i--
+			}
+		}
+	}
+
+	return input
+}
+
+// We find that the bulk of the time complexity arises from moving one element at a
+// time. We realize that, if we find a way through which we can move elements over a
+// larger distance we might be able to write a more efficient algorithm.
+// This is where Shell sort comes in. aka, "diminishing increment sort"
+func shellSort(input []int32) []int32 {
+	increments := []int{4, 2, 1}
+	// we need two loops: 1. for the increments, 2. for the numbers themselves
+	// first, lets loop on the increments
+	for _, increment := range increments {
+		// now, we need to sort elements with this increment for each number i
+		result := moddedStraightInsertionSort(increment, input)
+		fmt.Print("\nresult: ", increment, result)
+	}
 	return input
 }

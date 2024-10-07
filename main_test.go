@@ -72,8 +72,47 @@ func TestStraightInsertionSort(t *testing.T) {
 	}
 	for i, test := range tests {
 		t.Run(fmt.Sprintf("test-case-%d", i), func(t *testing.T) {
-			result := straightInserstionSort(test.input)
+			result := straightInsertionSort(test.input)
 
+			require.Equal(t, test.expectedResult, result)
+		})
+	}
+}
+
+func TestModdedStraightInsertionSort(t *testing.T) {
+	tests := []struct {
+		jump           int
+		input          []int32
+		expectedResult []int32
+	}{
+		{
+			jump:           2,
+			input:          []int32{3, 5, 1, 4, 2},
+			expectedResult: []int32{1, 4, 2, 5, 3},
+		},
+	}
+	for i, test := range tests {
+		t.Run(fmt.Sprintf("test-case-%d", i), func(t *testing.T) {
+			result := moddedStraightInsertionSort(2, test.input)
+
+			require.Equal(t, test.expectedResult, result)
+		})
+	}
+}
+
+func TestShellSort(t *testing.T) {
+	tests := []struct {
+		input          []int32
+		expectedResult []int32
+	}{
+		{
+			input:          []int32{1, 15, 5, 2, 4, 10, 3, 21},
+			expectedResult: []int32{1, 2, 3, 4, 5, 10, 15, 21},
+		},
+	}
+	for i, test := range tests {
+		t.Run(fmt.Sprintf("test-case-%d", i), func(t *testing.T) {
+			result := shellSort(test.input)
 			require.Equal(t, test.expectedResult, result)
 		})
 	}
