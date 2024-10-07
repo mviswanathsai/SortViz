@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"math"
+)
 
 // Compare each number with every other number.
 // The algorithm iterates i and compares it with every element that comes before i.
@@ -90,7 +92,7 @@ func straightInsertionSort(input []int32) []int32 {
 }
 
 func moddedStraightInsertionSort(jump int, input []int32) []int32 {
-	for j := 1; j < len(input); j++ {
+	for j := jump; j < len(input); j++ {
 		i := j - jump
 
 		for i >= 0 {
@@ -101,7 +103,7 @@ func moddedStraightInsertionSort(jump int, input []int32) []int32 {
 				temp := input[i+jump]
 				input[i+jump] = input[i]
 				input[i] = temp
-				i--
+				i -= jump
 			}
 		}
 	}
@@ -114,13 +116,30 @@ func moddedStraightInsertionSort(jump int, input []int32) []int32 {
 // larger distance we might be able to write a more efficient algorithm.
 // This is where Shell sort comes in. aka, "diminishing increment sort"
 func shellSort(input []int32) []int32 {
-	increments := []int{4, 2, 1}
-	// we need two loops: 1. for the increments, 2. for the numbers themselves
+	var increments []int
+	// This computation actually slows the overall function down a bit, but it is mentioned in TAOCP Vol.3,
+	// so I decided to add it here.
+	if len(input) < 100 {
+		for i := 0; i < 3*len(input); i++ {
+			increments = append(increments, 3*i+1)
+		}
+	} else {
+		for i := 1; i < 3*len(input); i++ {
+			increments = append(increments, int(math.Pow(float64(2), float64(i))))
+		}
+	}
+
+	// we need two loops: 1. for the increments, 2. for the numbers themselves (Happens
+	// inside the moddedStraightInsertionSort)
 	// first, lets loop on the increments
-	for _, increment := range increments {
+	for i := len(increments) - 1; i > -1; i-- {
 		// now, we need to sort elements with this increment for each number i
-		result := moddedStraightInsertionSort(increment, input)
-		fmt.Print("\nresult: ", increment, result)
+		moddedStraightInsertionSort(increments[i], input)
 	}
 	return input
 }
+
+// Further, we realize that the insertion sort can be improved by settling for a Datastructure
+// that is better suited for random insertion operations. And ofcourse, this would be the linked
+// list. The linked list is much better than a conventional array when it comes to insertions
+// because we need not shift everything that comes after.
