@@ -109,6 +109,10 @@ func TestShellSort(t *testing.T) {
 			input:          []int32{1, 15, 5, 2, 4, 10, 3, 21},
 			expectedResult: []int32{1, 2, 3, 4, 5, 10, 15, 21},
 		},
+		{
+			input:          []int32{99, 23, 10, 58, 33, 77, 16, 5, 2, 0, 89, 45, 62, 38, 18, 11, 71, 14, 29, 6},
+			expectedResult: []int32{0, 2, 5, 6, 10, 11, 14, 16, 18, 23, 29, 33, 38, 45, 58, 62, 71, 77, 89, 99},
+		},
 	}
 	for i, test := range tests {
 		t.Run(fmt.Sprintf("test-case-%d", i), func(t *testing.T) {
