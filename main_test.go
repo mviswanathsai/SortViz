@@ -121,3 +121,74 @@ func TestShellSort(t *testing.T) {
 		})
 	}
 }
+
+func TestInsert(t *testing.T) {
+	tests := []struct {
+		initialList    []int32
+		newRecord      int32
+		expectedResult []int32
+	}{
+		{
+			initialList:    []int32{},
+			newRecord:      10,
+			expectedResult: []int32{10},
+		},
+		{
+			initialList:    []int32{5, 20},
+			newRecord:      15,
+			expectedResult: []int32{5, 20, 15},
+		},
+		{
+			initialList:    []int32{1, 2, 3},
+			newRecord:      4,
+			expectedResult: []int32{1, 2, 3, 4},
+		},
+	}
+
+	for i, test := range tests {
+		t.Run(fmt.Sprintf("insert-test-case-%d", i), func(t *testing.T) {
+			ll := createLinkedListFromArray(test.initialList)
+			ll.insert(test.newRecord)
+			result := getLinkedListAsArray(ll)
+			require.Equal(t, test.expectedResult, result)
+		})
+	}
+}
+
+func TestDeleteValue(t *testing.T) {
+	tests := []struct {
+		initialList    []int32
+		valueToDelete  int32
+		expectedResult []int32
+		expectedStatus int
+	}{
+		{
+			initialList:    []int32{10, 20, 30, 40},
+			valueToDelete:  20,
+			expectedResult: []int32{10, 30, 40},
+			expectedStatus: 1,
+		},
+		{
+			initialList:    []int32{10, 20, 30, 40},
+			valueToDelete:  10,
+			expectedResult: []int32{20, 30, 40},
+			expectedStatus: 1,
+		},
+		{
+			initialList:    []int32{10, 20, 30, 40},
+			valueToDelete:  100,
+			expectedResult: []int32{10, 20, 30, 40},
+			expectedStatus: 0,
+		},
+	}
+
+	for i, test := range tests {
+		t.Run(fmt.Sprintf("delete-value-test-case-%d", i), func(t *testing.T) {
+			ll := createLinkedListFromArray(test.initialList)
+			status := ll.deleteValue(test.valueToDelete)
+			result := getLinkedListAsArray(ll)
+			require.Equal(t, test.expectedResult, result)
+			require.Equal(t, test.expectedStatus, status)
+		})
+	}
+}
