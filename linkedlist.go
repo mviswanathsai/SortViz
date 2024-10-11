@@ -1,4 +1,4 @@
-package linkedlist
+package main
 
 // A linked list contains an address, a record and a pointer to the next node's address
 type linkedListNode struct {
