@@ -139,72 +139,54 @@ func shellSort(input []int32) []int32 {
 	return input
 }
 
-// A linked list contains an address, a record and a pointer to the next node's address
-type linkedListNode struct {
-	record int32
-	next   *linkedListNode
-}
-
-type linkedList struct {
-	head *linkedListNode
-}
-
-// lets start with inserting a node at the end
-func (ll *linkedList) insert(record int32) {
+// We need to carry over our straight insertion sort from arrays to linked lists.
+// What are the principles? we assume everything to the right of the element under consideration is sorted
+// and  we just look for the first instance where the element under consideration is greater than
+// some element when travesring the "sorted" subset from right to left.
+func sortLinkedList(ll *linkedList) {
 	if ll.head == nil {
-		ll.head = &linkedListNode{record: record, next: nil}
 		return
 	}
+	// add a dummy node
+	// add a itr pointer
+	// add a previous pointer
+	// add a current pointer
+	prv := ll.head
+	cur := ll.head.next
+	dummy := &linkedListNode{next: ll.head}
 
-	ptr := ll.head
-
-	for ptr.next != nil {
-		ptr = ptr.next
-	}
-
-	ptr.next = &linkedListNode{record: record, next: nil}
-}
-
-// deleting the first occurance of a node with a certain value
-func (ll *linkedList) deleteValue(record int32) (status int) {
-	ptr := ll.head
-
-	if ptr == nil {
-		return 0
-	}
-
-	if ptr.record == record {
-		ll.head = ptr.next
-		return 1
-	}
-
-	for ptr.next != nil {
-		if ptr.next.record == record {
-			ptr.next = ptr.next.next
-			return 1
+	for cur != nil {
+		// Assuming order to the left of cur, if cur is greater than prv then it means
+		// that it is greater than the greatest element in the left and thus already in the correct pos.
+		if *prv.record <= *cur.record {
+			prv = cur
+			cur = cur.next
+			continue
 		}
-		ptr = ptr.next
+
+		// start from the left and check where cur should lie
+		itr := dummy
+		for *cur.record > *itr.next.record {
+			itr = itr.next
+		}
+		// this is the condition where cur.record <= itr.next.record i.e, the
+		// right position for cur.
+
+		// Remove cur from its original position
+		// We don't move prv so that we can get our cur value back
+		prv.next = cur.next
+
+		// Put cur between itr and itr.next
+		cur.next = itr.next
+		itr.next = cur
+
+		// Here we get the cur value back
+		if prv.next == nil {
+			break
+		}
+		cur = prv.next
 	}
 
-	return 0
+	ll.head = dummy.next
 }
 
-// Helper function to create a linked list from an array of integers
-func createLinkedListFromArray(arr []int32) *linkedList {
-	ll := &linkedList{}
-	for _, val := range arr {
-		ll.insert(val)
-	}
-	return ll
-}
-
-// Helper function to get the linked list as an array of integers
-func getLinkedListAsArray(ll *linkedList) []int32 {
-	var arr []int32
-	ptr := ll.head
-	for ptr != nil {
-		arr = append(arr, ptr.record)
-		ptr = ptr.next
-	}
-	return arr
-}
